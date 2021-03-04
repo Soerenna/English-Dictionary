@@ -1,4 +1,5 @@
 import json
+from difflib import SequenceMatcher
 with open('C:\\Users\\Soerenna\\Desktop\\Projects\\English Thesaurus\\data.json') as f:
     r = f.read()
 data = json.loads(r)
