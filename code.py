@@ -1,14 +1,16 @@
 import json
 from difflib import SequenceMatcher
+import time
 with open('C:\\Users\\Soerenna\\Desktop\\Projects\\English Thesaurus\\data.json') as f:
     r = f.read()
 data = json.loads(r)
 
 def find_word(word):
+    definitions = []
     try:
-        return data[word.lower()]
+        return data[word]
     except KeyError:
-        return 'Not Found'
+        return None
  
 def matcher(word):
     matches = dict() # create a dictionary which contains keys with their respective ratios if the ratio > 0.5
@@ -17,13 +19,49 @@ def matcher(word):
         ratio = s.ratio()
         if ratio > 0.5:
             matches[key] = ratio
-    max_keys = sorted(matches.items(), key=lambda x: x[1], reverse=True)[:8] # the keys with values that correspond to the eight highest similarity ratios in descending order
+    max_keys = [key for key, ratio in sorted(matches.items(), key=lambda x: x[1], reverse=True)[:8]] # the keys with values that correspond to the eight highest similarity ratios in descending order
     return max_keys
+
+def display(result):
+    if result:
+        if len(result) > 1:
+            count = 1
+            for definition in result:
+                print(f'definition {count}: {definition}'+'\n')
+                count += 1
+        else:
+            for definition in result:
+                print(f'definition: {definition}'+'\n')
+    else:
+        print('Sorry, no such word in my library..')
+        
+def suggest(matches):
+    print('Word not found.')
+    print('Did you mean one of these words?\n')
+    
+    for i in range(len(matches)):
+        print(f'({i+1}) {matches[i]}')
+    
+    while True:
+        time.sleep(0.05)
+        answer = input('\ntype No or input corresponding number:').lower()
+        if answer in ('no', 'n'):
+            return None
+        else:
+            try:
+                index = int(answer) - 1
+                if index in range(len(matches)):
+                    return matches[index]
+                else:
+                    print('please input correct value.')
+            except ValueError:
+                print('please input correct value.')
 
 def dictionary():
     
     import json
     from difflib import SequenceMatcher
+    import time
     with open('C:\\Users\\Soerenna\\Desktop\\Projects\\English Dictionary\\data.json') as f:
         r = f.read()   
     data = json.loads(r)
@@ -31,21 +69,16 @@ def dictionary():
     while True:
         word = input('please enter a word: ').lower()
         print('\n')
-        lookup = find_word(word)
+        result = find_word(word)
         
-        if lookup: # this should probably be a function 
-            if len(lookup) > 1: 
-                count = 1
-                for definition in lookup:
-                    print(f'definition {count}: {definition}'+'\n')
-                    count += 1
-            else:
-                for definition in lookup:
-                    print(f'definition: {definition}'+'\n')
-            break
+        if result:
+            display(result)  
         else:
-            # run search for similar words
-            break
-    
+            possible_matches = matcher(word)
+            if matches:
+                match = suggest(possible_matches)
+            else:
+                display(matches)
+        break 
     return word
 
