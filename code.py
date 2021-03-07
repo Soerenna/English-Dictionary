@@ -57,28 +57,40 @@ def suggest(matches):
             except ValueError:
                 print('please input correct value.')
 
-def dictionary():
-    
-    import json
-    from difflib import SequenceMatcher
-    import time
-    with open('C:\\Users\\Soerenna\\Desktop\\Projects\\English Dictionary\\data.json') as f:
-        r = f.read()   
-    data = json.loads(r)
+def run_program():
     
     while True:
+        run = input('Do you wish to continue? (y/n):').lower()
+        if run in ('yes','no','y','n'):
+            break
+        else:
+            print('Please enter (y) to continue or (n) to stop.')
+        
+    return True if run in ('yes','y') else False
+
+def dictionary():
+    
+    run = True
+    
+    while run:
         word = input('please enter a word: ').lower()
         print('\n')
         result = find_word(word)
         
         if result:
-            display(result)  
+            display(result)
+            run = run_program()
         else:
             possible_matches = matcher(word)
             if matches:
                 match = suggest(possible_matches)
+                if match:
+                    result = find_word(match)
+                    print('\n')
+                    display(result)
+                    run = run_program()
+                else:
+                    display(match)
             else:
                 display(matches)
-        break 
-    return word
 
