@@ -82,7 +82,7 @@ def dictionary():
             run = run_program()
         else:
             possible_matches = matcher(word)
-            if matches:
+            if possible_matches:
                 match = suggest(possible_matches)
                 if match:
                     result = find_word(match)
